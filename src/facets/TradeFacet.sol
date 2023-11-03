@@ -4,8 +4,6 @@ pragma solidity >=0.8.21;
 import { AppStorage, DEFAULT_WEIGHT_A, DEFAULT_WEIGHT_B, DEFAULT_WEIGHT_C } from "../libraries/LibAppStorage.sol";
 import { LibPausable } from "../libraries/LibPausable.sol";
 
-import "forge-std/console.sol";
-
 contract TradeFacet {
     AppStorage internal s;
 
@@ -124,13 +122,11 @@ contract TradeFacet {
 
         // If there is a refund amount, send it to the sender
         if (refundAmount > 0) {
-            console.log("refundAmount", refundAmount);
             _sendToSubject(msg.sender, refundAmount);
         }
 
         // If there is a referral fee, send it to the referrer
         if (referralFee > 0) {
-            console.log("referralFee", referralFee);
             _sendToReferrer(msg.sender, referralFee);
         }
 
