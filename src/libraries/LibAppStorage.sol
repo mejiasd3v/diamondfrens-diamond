@@ -6,6 +6,14 @@ uint256 constant DEFAULT_WEIGHT_B = 50 ether / 100;
 uint256 constant DEFAULT_WEIGHT_C = 2;
 uint256 constant DEFAULT_WEIGHT_D = 0;
 
+enum PostFlagType {
+    Violent, // Represents violent content
+    Sexual, // Represents sexual content
+    Harmful, // Represents harmful or dangerous content
+    Deceptive, // Represents deceptive or misleading content
+    Spam // Represents spam or unsolicited content
+}
+
 struct AppStorage {
     /////////////////////
     /// AUTHORIZATION ///
@@ -35,4 +43,7 @@ struct AppStorage {
     mapping(uint256 => uint256) postLikeCountOf;
     mapping(address => mapping(uint256 => bool)) likedPostsOf;
     mapping(uint256 => uint256) postReplyCountOf;
+    mapping(uint256 => uint256) postDislikeCountOf;
+    mapping(address => mapping(uint256 => bool)) dislikedPostsOf;
+    mapping(uint256 => PostFlagType) postFlags;
 }
