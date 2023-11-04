@@ -13,10 +13,7 @@ contract ContentFacetTest is DiamondTest {
         unicode"@MiloTruck.\n" unicode"You won't believe the insights and secrets revealed! 🕵️‍♂️ 🧵\n"
         unicode"(Either watch now or bookmark for later!)";
 
-    event Post(address indexed author, uint256 indexed postId, uint256 createdAt, string content);
-    event PostReply(
-        address indexed author, uint256 indexed postId, uint256 indexed replyId, uint256 createdAt, string content
-    );
+    event Post(address indexed author, uint256 indexed postId, uint256 createdAt, string content, uint256 parentPostId);
 
     function setUp() public {
         vm.startPrank(diamondOwner);
@@ -30,17 +27,17 @@ contract ContentFacetTest is DiamondTest {
 
     function test_post_UserCanCreatePostAndEventIsEmitted() public {
         vm.expectEmit();
-        emit Post(user, 0, block.timestamp, "Hello World");
+        emit Post(user, 1, block.timestamp, post1, 0);
 
         vm.prank(user);
-        facet.post("Hello World");
+        facet.post(post1);
 
         assertEq(facet.postCountOf(user), 1, "Post count did not increase");
     }
 
     function test_post_UserCanCreateLongPost() public {
         vm.expectEmit();
-        emit Post(user, 0, block.timestamp, post2);
+        emit Post(user, 1, block.timestamp, post2, 0);
 
         vm.prank(user);
         facet.post(post2);
@@ -49,20 +46,21 @@ contract ContentFacetTest is DiamondTest {
     }
 
     function test_reply_UserCanReplyAnExistingPost() public {
+        address user2 = makeAddr("user2");
+
         vm.expectEmit();
-        emit Post(user, 0, block.timestamp, post1);
-        emit PostReply(user, 0, 0, block.timestamp, post2);
+        emit Post(user, 1, block.timestamp, post1, 0);
+        emit Post(user2, 2, block.timestamp, post1, 1);
 
         vm.prank(user);
         facet.post(post1);
 
-        address user2 = makeAddr("user2");
         vm.deal(user2, 1 ether);
         vm.prank(user2);
-        facet.reply(0, post2);
+        facet.postReply(post2, 1);
 
         assertEq(facet.postCountOf(user), 1, "Post count did not increase");
-        assertEq(facet.postReplyCountOf(0), 1, "Reply count did not increase");
+        assertEq(facet.postReplyCountOf(1), 2, "Reply count did not increase");
     }
 
     function testFuzz_post(string calldata content) public {

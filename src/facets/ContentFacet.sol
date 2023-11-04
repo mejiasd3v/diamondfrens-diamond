@@ -8,6 +8,7 @@ contract ContentFacet {
 
     error AlreadyLiked();
     error AlreadyDisliked();
+    error InvalidParentPostId();
 
     event Post(address indexed author, uint256 indexed postId, uint256 createdAt, string content, uint256 parentPostId);
     event PostLike(address indexed author, uint256 indexed postId, uint256 indexed likeId, uint256 createdAt);
@@ -29,12 +30,19 @@ contract ContentFacet {
         return s.postReplyCountOf[_postId];
     }
 
-    function post(string calldata _content, uint256 _parentPostId) external {
-        uint256 _id = s.postCountOf[msg.sender];
-        s.postCountOf[msg.sender] = _id + 1; // Increment post count
-        if (_parentPostId != 0) {
-            s.postReplyCountOf[_id] = _id + 1; // Increment reply count
+    function post(string calldata _content) external {
+        uint256 _id = s.postCountOf[msg.sender] + 1; // Increment post count
+        s.postCountOf[msg.sender] = _id;
+        emit Post(msg.sender, _id, block.timestamp, _content, 0);
+    }
+
+    function postReply(string calldata _content, uint256 _parentPostId) external {
+        if (_parentPostId == 0) {
+            revert InvalidParentPostId();
         }
+        uint256 _id = s.postCountOf[msg.sender] + 1; // Increment post count
+        s.postCountOf[msg.sender] = _id;
+        s.postReplyCountOf[_id] = _id + 1; // Increment reply count
         emit Post(msg.sender, _id, block.timestamp, _content, _parentPostId);
     }
 

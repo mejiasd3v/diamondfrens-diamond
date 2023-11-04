@@ -132,14 +132,15 @@ contract DiamondTest is Test {
     function setContentFacet() private {
         ContentFacet facet = new ContentFacet();
         bytes4[] memory functionSelectors;
-        functionSelectors = new bytes4[](7);
+        functionSelectors = new bytes4[](8);
         functionSelectors[0] = ContentFacet.post.selector;
-        functionSelectors[1] = ContentFacet.like.selector;
-        functionSelectors[2] = ContentFacet.reply.selector;
-        functionSelectors[3] = ContentFacet.repost.selector;
-        functionSelectors[4] = ContentFacet.postCountOf.selector;
-        functionSelectors[5] = ContentFacet.postLikeCountOf.selector;
-        functionSelectors[6] = ContentFacet.postReplyCountOf.selector;
+        functionSelectors[1] = ContentFacet.postReply.selector;
+        functionSelectors[2] = ContentFacet.like.selector;
+        functionSelectors[3] = ContentFacet.dislike.selector;
+        functionSelectors[4] = ContentFacet.repost.selector;
+        functionSelectors[5] = ContentFacet.postCountOf.selector;
+        functionSelectors[6] = ContentFacet.postLikeCountOf.selector;
+        functionSelectors[7] = ContentFacet.postReplyCountOf.selector;
         cut.push(
             IDiamondCut.FacetCut({
                 facetAddress: address(facet),
